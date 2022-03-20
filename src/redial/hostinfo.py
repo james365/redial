@@ -1,3 +1,4 @@
+import os 
 
 class HostInfo:
     # TODO rename to name
@@ -9,9 +10,11 @@ class HostInfo:
     dynamic_forward = ""
     local_forward = ("", "")
     remote_forward = ("", "")
+    short_name = ""
 
     def __init__(self, full_name):
         self.full_name = full_name
+        self.short_name = os.path.basename(full_name)
 
     def get_mc_command(self):
         c = "mc . sh://"
@@ -28,6 +31,8 @@ class HostInfo:
             c = c + "/home/" + self.username
 
         return c
+    def get_name(self):
+        return self.short_name
 
     def get_ssh_command(self):
         c = "ssh "

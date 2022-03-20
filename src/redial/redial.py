@@ -11,6 +11,7 @@ from redial.ui.tree import UIParentNode, UITreeWidget, UITreeNode, UITreeListBox
 from redial.ui.palette import palette
 from redial.utils import package_available, get_public_ssh_keys
 from redial.uistate import save_ui_state, restore_ui_state
+from redial.terminal import setTabTitle
 from functools import partial
 
 
@@ -43,6 +44,7 @@ class RedialApplication:
         self.command = None
         self.command_return_key = None
         self.log = None
+        self.hostname = None
 
     def run(self):
         if self.command_return_key == 0 and self.log is not None:
@@ -64,6 +66,8 @@ class RedialApplication:
         elif key == "enter":
             if isinstance(w.get_node(), UITreeNode):
                 self.command = w.get_node().get_value().hostinfo.get_ssh_command()
+                self.hostname = w.get_node().get_value().hostinfo.get_name()
+
                 raise urwid.ExitMainLoop()
 
         elif key == "f3" and w.is_leaf:
@@ -161,12 +165,14 @@ def run():
             if app.command == EXIT_REDIAL:
                 break
             else:
+                setTabTitle(app.hostname, app.hostname)
                 rk = os.system(app.command)
                 if rk == 33280 or rk == 0:
                     app.command_return_key = rk
                 else:
                     app.command_return_key = rk
                     break
+                setTabTitle("%d : %n","(%u) %H")
 
     save_ui_state(app.listbox)
 
